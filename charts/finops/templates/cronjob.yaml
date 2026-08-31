@@ -1,0 +1,40 @@
+{{- if .Values.cronjob.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "finops.fullname" . }}-daily-analyzer
+  labels:
+    {{- include "finops.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.cronjob.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "finops.selectorLabels" . | nindent 12 }}
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: finops-analyzer-trigger
+              image: curlimages/curl:latest
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "Executing daily FinOps analysis at 3:00 AM..."
+                  # targetNamespaces 각각에 대해 /analyze/namespace를 순차 호출해 KRR이 발견하는
+                  # 모든 워크로드를 전수 분석합니다. 네임스페이스 하나가 실패해도 나머지 네임스페이스
+                  # 분석은 계속 진행하고, 실패한 네임스페이스만 로그에 ERROR로 남깁니다.
+                  {{- range .Values.cronjob.targetNamespaces }}
+                  echo "Analyzing namespace: {{ . }}"
+                  curl -sf --max-time 600 -X POST "http://{{ include "finops.fullname" $ }}:{{ $.Values.service.port }}/analyze/namespace" \
+                    -H "Content-Type: application/json" \
+                    -d '{"namespace": "{{ . }}", "history_duration": "{{ $.Values.cronjob.historyDuration }}", "send_telegram": true}' \
+                    || echo "ERROR: namespace '{{ . }}' 분석 실패"
+                  {{- end }}
+{{- end }}

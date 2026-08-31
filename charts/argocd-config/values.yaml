@@ -1,0 +1,41 @@
+gatewayName: "my-gateway"
+gatewayNamespace: "default"
+
+httpRoutes:
+  - name: argocd-route
+    namespace: argocd
+    hostname: "argocd.tuby.shop"
+    serviceName: "argocd-server"
+    port: 80
+  - name: grafana-route
+    namespace: prometheus
+    hostname: "grafana.tuby.shop"
+    serviceName: "prometheus-stack-grafana"
+    port: 80
+  - name: prometheus-route
+    namespace: prometheus
+    hostname: "prometheus.tuby.shop"
+    serviceName: "prometheus-public-auth"
+    port: 80
+    healthCheck:
+      path: /healthz
+      successCodes: "200"
+  - name: alertmanager-route
+    namespace: prometheus
+    hostname: "alertmanager.tuby.shop"
+    serviceName: "prometheus-stack-kube-prom-alertmanager"
+    port: 9093
+
+  - name: tg-gateway-route
+    namespace: default
+    hostname: "alarm.tuby.shop"
+    serviceName: "tg-gateway-service"
+    port: 8000
+prometheusAuth:
+  enabled: true
+  username: admin
+  # Password: admin1234. Only the one-way hash is stored in Git.
+  passwordHash: "{SHA}e5Aub/Hbn1YEQ/IEiXT9fThpdbA="
+  image:
+    repository: nginx
+    tag: "1.27.5-alpine"

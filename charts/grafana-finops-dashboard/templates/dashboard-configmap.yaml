@@ -1,0 +1,16 @@
+{{- range .Values.dashboards }}
+{{- $dashboardPath := printf "dashboards/%s" .fileName }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Values.namespace | default $.Release.Namespace }}
+  labels:
+    {{ .label }}: {{ .labelValue | quote }}
+  annotations:
+    grafana_folder: {{ .folder | quote }}
+data:
+  {{ .fileName }}: |
+{{ required (printf "dashboard file %s is required" $dashboardPath) ($.Files.Get $dashboardPath) | indent 4 }}
+---
+{{- end }}

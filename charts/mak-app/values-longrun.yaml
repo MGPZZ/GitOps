@@ -1,0 +1,13 @@
+loadgen:
+  enabled: true
+  runId: "longrun-test"
+  phase: "pre"
+  profile: "long"
+  timeScale: "0.03"
+  lowRps: "1"
+  normalRps: "500"
+  peakRps: "700"
+  spikeRps: "1100"
+  recoveryRps: "350"
+  podAnnotations:
+    karpenter.sh/do-not-disrupt: "true"

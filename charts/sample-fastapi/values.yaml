@@ -1,0 +1,77 @@
+image:
+  repository: 372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/sample-fastapi
+  tag: "v0.1.20"
+  pullPolicy: IfNotPresent
+redis:
+  # Terraform의 Argo CD Application이 실제 ElastiCache Endpoint로 덮어씁니다.
+  host: ""
+  port: 6379
+  db: 0
+  ssl: true
+  sslCertReqs: required
+  queueKey: dev:sample:queue
+  connectTimeout: 5
+  socketTimeout: 5
+  healthCheckInterval: 30
+  retryAttempts: 2
+fastapi:
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    # Service는 80으로 노출하고 Pod의 이름 있는 http 포트(8000)로 전달합니다.
+    port: 80
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+worker:
+  replicaCount: 1
+  processingSeconds: 0.25
+  metricsPort: 9100
+  autoscaling:
+    enabled: true
+    # reactive: 실제 Redis Queue만 사용
+    # predictive: Queue Fallback과 Chronos 선제 예측을 함께 사용
+    mode: reactive
+    minReplicaCount: 1
+    maxReplicaCount: 15
+    predictiveMaxReplicaCount: 3
+    pollingInterval: 5
+    cooldownPeriod: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      periodSeconds: 60
+    prometheus:
+      serverAddress: http://prometheus-stack-kube-prom-prometheus.prometheus.svc.cluster.local:9090
+      query: >-
+        max(sample_queue_length{namespace="sample-fastapi",service="sample-fastapi"})
+      threshold: "5"
+      activationThreshold: "1"
+    chronos:
+      # Chronos 메트릭은 ServiceMonitor를 통해 같은 Prometheus에 수집됩니다.
+      serverAddress: http://prometheus-stack-kube-prom-prometheus.prometheus.svc.cluster.local:9090
+      query: >-
+        (
+
+
+          max(chronos_scaling_replicas{exported_namespace="sample-fastapi",deployment="sample-worker"})
+          * max(chronos_forecast_valid{exported_namespace="sample-fastapi",deployment="sample-worker"})
+          * max((time() - chronos_forecast_timestamp_seconds{exported_namespace="sample-fastapi",deployment="sample-worker"}) < bool 120)
+        ) or vector(0)
+      threshold: "1"
+      activationThreshold: "0"
+  resources:
+    requests:
+      cpu: 425m
+      memory: 142Mi
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+serviceMonitor:
+  # Prometheus Operator CRD가 설치된 뒤 true로 변경합니다.
+  enabled: true
+  interval: 15s
+  scrapeTimeout: 10s
