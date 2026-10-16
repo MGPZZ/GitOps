@@ -17,6 +17,8 @@ spec:
           labels:
             {{- include "finops.selectorLabels" . | nindent 12 }}
         spec:
+          nodeSelector:
+            role: worker
           restartPolicy: OnFailure
           containers:
             - name: finops-analyzer-trigger

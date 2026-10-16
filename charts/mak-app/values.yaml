@@ -1,5 +1,7 @@
 # 기본 애플리케이션 설정
 replicaCount: 3
+nodeSelector:
+  role: worker
 images:
   frontend: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/mak_frontend_ecr:3.2"
   userservice: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/mak_userservice_ecr:3.2"
@@ -56,7 +58,7 @@ service:
   port: 80
 # Redis 연결 설정
 redis:
-  host: "master.project03-sample-redis.uuepdo.apn2.cache.amazonaws.com"
+  host: "master.side-project-sample-redis.uuepdo.apn2.cache.amazonaws.com"
   port: 6379
   db: 0
   password: "" # Redis 비밀번호 (ElastiCache에 설정되지 않음)
@@ -82,16 +84,6 @@ autoscaling:
     scaleDown:
       stabilizationWindowSeconds: 300
       periodSeconds: 60
-    chronos:
-      serverAddress: "http://thanos-query.prometheus.svc.cluster.local:9090"
-      query: >-
-        (
-          max(chronos_scaling_replicas{deployment="mak-app-rollout"})
-          * max(chronos_forecast_valid{deployment="mak-app-rollout"})
-          * max((time() - chronos_forecast_timestamp_seconds{deployment="mak-app-rollout"}) < bool 120)
-        ) or vector(0)
-      threshold: "1"
-      activationThreshold: "0"
   backend:
     enabled: true
     minReplicas: 1
@@ -99,10 +91,6 @@ autoscaling:
     pollingInterval: 5
     cooldownPeriod: 60
     redisListLength: "2"
-    chronos:
-      serverAddress: "http://prometheus-stack-kube-prom-prometheus.prometheus.svc.cluster.local:9090" 
-      threshold: "1"
-      activationThreshold: "0"
 # 유한 시간 Bank of Anthos k6 Job. runId 변경이 재실행 키이며 기본값은 배포하지 않음.
 loadgen:
   enabled: false
@@ -124,7 +112,7 @@ loadgen:
   paymentAmount: "0.01"
   authMode: "shared"
   prometheusRemoteWriteEnabled: false
-  prometheusRemoteWriteUrl: "http://prometheus-stack-kube-prom-prometheus.prometheus.svc.cluster.local:9090/api/v1/write"
+  prometheusRemoteWriteUrl: "http://prometheus-stack-kube-prom-prometheus.monitoring.svc.cluster.local:9090/api/v1/write"
   activeDeadlineSeconds: 90000
   podAnnotations:
     # karpenter.sh/do-not-disrupt: "true"

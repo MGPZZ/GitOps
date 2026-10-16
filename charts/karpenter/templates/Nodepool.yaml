@@ -10,7 +10,7 @@ spec:
     metadata:
     # nodepool을 통해 만들어낼 노드에 붙일 라벨
       labels:
-        node-role: worker
+        role: worker
     spec:
       nodeClassRef:
         group: {{ .Values.karpenter_modulename }}
@@ -22,10 +22,14 @@ spec:
           values: ["t3"]
         - key: "{{ .Values.karpenter_modulename }}/instance-size"
           operator: In
-          values: ["small","medium"]
+          values: ["nano","small","micro"]
         - key: kubernetes.io/arch
           operator: In
           values: ["amd64"]
+          # ap-northeast-2a, ap-northeast-2c에 worker node가 고루 뜨게 변경
+        - key: topology.kubernetes.io/zone
+          operator: In
+          values: ["ap-northeast-2a", "ap-northeast-2c"]
         - key: karpenter.sh/capacity-type
           operator: In
           # value에 spot을 작성해서 spot instance도 사용할 수 있음

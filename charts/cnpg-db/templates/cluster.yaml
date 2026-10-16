@@ -10,7 +10,7 @@ metadata:
   namespace: default
   annotations:
     # 테라폼(05-cnpg-backup.tf)에서 생성한 AWS IAM Role 주소 매핑
-    eks.amazonaws.com/role-arn: "arn:aws:iam::372666940978:role/project03-cnpg-s3-role"
+    eks.amazonaws.com/role-arn: "arn:aws:iam::372666940978:role/side-project-cnpg-s3-role"
 --- 
 # =================================================================
 # 2. CloudNativePG 데이터베이스 클러스터 설정 (Cluster)
@@ -18,7 +18,7 @@ metadata:
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: project03-db
+  name: side-project-db
   namespace: backend # 앱(mak-app)과 같은 네임스페이스를 사용하여 통신을 편하게 함
 spec:
   # DB 인스턴스 개수 (2로 설정하면 1대는 쓰기용 Primary, 1대는 읽기용 Standby로 자동 구성되어 고가용성을 확보합니다)
@@ -28,7 +28,7 @@ spec:
   serviceAccountTemplate:
     metadata:
       annotations:
-        eks.amazonaws.com/role-arn: "arn:aws:iam::372666940978:role/project03-cnpg-s3-role"
+        eks.amazonaws.com/role-arn: "arn:aws:iam::372666940978:role/side-project-cnpg-s3-role"
   # =========================================
   # 데이터베이스 초기화(Bootstrap) 설정
   # =========================================
@@ -102,7 +102,7 @@ spec:
   # 특정 시점 복구(Point-in-Time Recovery)를 할 때 필수적인 설정입니다.
   backup:
     barmanObjectStore:
-      destinationPath: "s3://project03-cnpg-backup-07l03u/"
+      destinationPath: "s3://side-project-cnpg-backup-07l03u/"
       s3Credentials:
         # 서비스어카운트(IRSA)에 부여된 IAM 권한을 그대로 상속받아 사용
         inheritFromIAMRole: true

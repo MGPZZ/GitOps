@@ -8,12 +8,12 @@ httpRoutes:
     serviceName: "argocd-server"
     port: 80
   - name: grafana-route
-    namespace: prometheus
+    namespace: monitoring
     hostname: "grafana.tuby.shop"
     serviceName: "prometheus-stack-grafana"
     port: 80
   - name: prometheus-route
-    namespace: prometheus
+    namespace: monitoring
     hostname: "prometheus.tuby.shop"
     serviceName: "prometheus-public-auth"
     port: 80
@@ -21,13 +21,13 @@ httpRoutes:
       path: /healthz
       successCodes: "200"
   - name: alertmanager-route
-    namespace: prometheus
+    namespace: monitoring
     hostname: "alertmanager.tuby.shop"
     serviceName: "prometheus-stack-kube-prom-alertmanager"
     port: 9093
 
   - name: tg-gateway-route
-    namespace: default
+    namespace: monitoring
     hostname: "alarm.tuby.shop"
     serviceName: "tg-gateway-service"
     port: 8000

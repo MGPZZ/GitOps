@@ -12,7 +12,7 @@ spec:
   serviceAccountTemplate:
     metadata:
       annotations:
-        eks.amazonaws.com/role-arn: "arn:aws:iam::372666940978:role/project03-cnpg-s3-role"
+        eks.amazonaws.com/role-arn: "arn:aws:iam::372666940978:role/side-project-cnpg-s3-role"
   # DB 초기화 및 KRR 전용 테이블 스키마 생성
   bootstrap:
     initdb:
@@ -59,7 +59,7 @@ spec:
   # 특정 시점 복구(Point-in-Time Recovery)를 할 때 필수적인 설정입니다.
   backup:
     barmanObjectStore:
-      destinationPath: "s3://project03-cnpg-backup-07l03u/krr-data-db"
+      destinationPath: "s3://side-project-cnpg-backup-07l03u/krr-data-db"
       s3Credentials:
         # 서비스어카운트(IRSA)에 부여된 IAM 권한을 그대로 상속받아 사용
         inheritFromIAMRole: true

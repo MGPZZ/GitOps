@@ -32,8 +32,6 @@ spec:
               value: {{ .Values.env.mockIntegration | quote }}
             - name: PROMETHEUS_URL
               value: {{ .Values.env.prometheusUrl | quote }}
-            - name: CHRONOS_URL
-              value: {{ .Values.env.chronosUrl | quote }}
             - name: AUTO_SEND_TELEGRAM
               value: {{ .Values.env.autoSendTelegram | quote }}
             - name: LOG_FORMAT
