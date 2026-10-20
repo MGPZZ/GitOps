@@ -3,14 +3,14 @@ replicaCount: 3
 nodeSelector:
   role: worker
 images:
-  frontend: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/frontend_ecr:latest"
-  userservice: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/userservice_ecr:latest"
-  contacts: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/contacts_ecr:latest"
-  balancereader: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/balancereader_ecr:latest"
-  ledgerwriter: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/ledgerwriter_ecr:latest"
-  transactionhistory: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/transactionhistory_ecr:latest"
-  worker: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/sample-fastapi:v0.1.22"
-  loadgen: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/loadgen_ecr:v0.6.11"
+  frontend: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/frontend_ecr:latest"
+  userservice: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/userservice_ecr:latest"
+  contacts: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/contacts_ecr:latest"
+  balancereader: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/balancereader_ecr:latest"
+  ledgerwriter: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/ledgerwriter_ecr:latest"
+  transactionhistory: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/transactionhistory_ecr:latest"
+  worker: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/sample-fastapi:v0.1.22"
+  loadgen: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/loadgen_ecr:v0.6.11"
 imageRevision: "initial"
 image:
   pullPolicy: Always
