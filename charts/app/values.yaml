@@ -9,7 +9,6 @@ images:
   balancereader: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/balancereader_ecr:latest"
   ledgerwriter: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/ledgerwriter_ecr:latest"
   transactionhistory: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/transactionhistory_ecr:latest"
-  worker: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/sample-fastapi:v0.1.22"
   loadgen: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/loadgen_ecr:v0.6.11"
 imageRevision: "initial"
 image:
