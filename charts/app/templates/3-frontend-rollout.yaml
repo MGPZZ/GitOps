@@ -9,7 +9,7 @@ spec:
     - name: my-gateway
       namespace: default
   hostnames:
-    - "tuby.shop"
+    - "{{ .Values.hostname }}"
   rules:
     - backendRefs:
         - name: mak-app-active
@@ -80,9 +80,9 @@ spec:
         application: bank-of-anthos
         team: frontend
         tier: web
+      annotations:
+        app.mgpzz.com/image-revision: {{ .Values.imageRevision | quote }}
     spec:
-      nodeSelector:
-        {{- toYaml .Values.nodeSelector | nindent 8 }}
       containers:
         - name: mak-container
           image: "{{ .Values.images.frontend }}"
@@ -124,18 +124,18 @@ spec:
 
             # === 외부 CNPG 데이터베이스 연동 계정 주입 ===
             # - name: DB_HOST
-            #   value: "side-project-db-rw.backend.svc.cluster.local"
+            #   value: "project03-db-rw.backend.svc.cluster.local"
             # - name: DB_PORT
             #   value: "5432"
             # - name: DB_USER
             #   valueFrom:
             #     secretKeyRef:
-            #       name: side-project-db-app
+            #       name: project03-db-app
             #       key: username
             # - name: DB_PASSWORD
             #   valueFrom:
             #     secretKeyRef:
-            #       name: side-project-db-app
+            #       name: project03-db-app
             #       key: password
             # ===
           envFrom:

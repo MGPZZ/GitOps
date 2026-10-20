@@ -3,16 +3,17 @@ replicaCount: 3
 nodeSelector:
   role: worker
 images:
-  frontend: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/mak_frontend_ecr:3.2"
-  userservice: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/mak_userservice_ecr:3.2"
-  contacts: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/mak_contacts_ecr:3.2"
-  balancereader: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/mak_balancereader_ecr:3.2"
-  ledgerwriter: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/mak_ledgerwriter_ecr:3.2"
-  transactionhistory: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/mak_transactionhistory_ecr:3.2"
+  frontend: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/frontend_ecr:latest"
+  userservice: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/userservice_ecr:latest"
+  contacts: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/contacts_ecr:latest"
+  balancereader: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/balancereader_ecr:latest"
+  ledgerwriter: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/ledgerwriter_ecr:latest"
+  transactionhistory: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/transactionhistory_ecr:latest"
   worker: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/sample-fastapi:v0.1.22"
-  loadgen: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/mak_loadgen_ecr:v0.6.11"
+  loadgen: "372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/loadgen_ecr:v0.6.11"
+imageRevision: "initial"
 image:
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 # 패턴 분석 결과에 따라 깃허브 액션이 변경할 자원 권장값 영역
 resources:
   frontend:
@@ -128,3 +129,4 @@ loadgen:
     limits:
       cpu: 2000m
       memory: 2Gi
+hostname: vche.cloud

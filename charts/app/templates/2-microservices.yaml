@@ -12,13 +12,14 @@ spec:
     metadata:
       labels:
         app: userservice
+      annotations:
+        app.mgpzz.com/image-revision: {{ .Values.imageRevision | quote }}
     spec:
-      nodeSelector:
-        {{- toYaml .Values.nodeSelector | nindent 8 }}
       containers:
         - name: userservice
           #image: us-central1-docker.pkg.dev/bank-of-anthos-ci/bank-of-anthos/userservice:v0.6.10
           image: "{{ .Values.images.userservice }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
           resources:
 {{ toYaml .Values.resources.userservice.app | nindent 12 }}
           ports:
@@ -34,15 +35,15 @@ spec:
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: side-project-db-app
+                  name: project03-db-app
                   key: username
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: side-project-db-app
+                  name: project03-db-app
                   key: password
             - name: ACCOUNTS_DB_URI
-              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@side-project-db-rw.backend.svc.cluster.local:5432/app"
+              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@project03-db-rw.backend.svc.cluster.local:5432/app"
             # ============================
           envFrom:
             - configMapRef:
@@ -122,13 +123,14 @@ spec:
     metadata:
       labels:
         app: contacts
+      annotations:
+        app.mgpzz.com/image-revision: {{ .Values.imageRevision | quote }}
     spec:
-      nodeSelector:
-        {{- toYaml .Values.nodeSelector | nindent 8 }}
       containers:
         - name: contacts
           # image: us-central1-docker.pkg.dev/bank-of-anthos-ci/bank-of-anthos/contacts:v0.6.10
           image: "{{ .Values.images.contacts }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
           resources:
 {{ toYaml .Values.resources.contacts.app | nindent 12 }}
           ports:
@@ -140,15 +142,15 @@ spec:
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: side-project-db-app
+                  name: project03-db-app
                   key: username
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: side-project-db-app
+                  name: project03-db-app
                   key: password
             - name: ACCOUNTS_DB_URI
-              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@side-project-db-rw.backend.svc.cluster.local:5432/app"
+              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@project03-db-rw.backend.svc.cluster.local:5432/app"
             # ============================
           envFrom:
             - configMapRef:
@@ -224,13 +226,14 @@ spec:
     metadata:
       labels:
         app: balancereader
+      annotations:
+        app.mgpzz.com/image-revision: {{ .Values.imageRevision | quote }}
     spec:
-      nodeSelector:
-        {{- toYaml .Values.nodeSelector | nindent 8 }}
       containers:
         - name: balancereader
           #image: us-central1-docker.pkg.dev/bank-of-anthos-ci/bank-of-anthos/balancereader:v0.6.10
           image: "{{ .Values.images.balancereader }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
           resources:
 {{ toYaml .Values.resources.balancereader.app | nindent 12 }}
           ports:
@@ -242,16 +245,16 @@ spec:
               value: "8080"
             # === 이 부분을 추가해 주세요 ===
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://side-project-db-rw.backend.svc.cluster.local:5432/app"
+              value: "jdbc:postgresql://project03-db-rw.backend.svc.cluster.local:5432/app"
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: side-project-db-app
+                  name: project03-db-app
                   key: username
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: side-project-db-app
+                  name: project03-db-app
                   key: password
             # ============================
           envFrom:
@@ -329,13 +332,14 @@ spec:
     metadata:
       labels:
         app: ledgerwriter
+      annotations:
+        app.mgpzz.com/image-revision: {{ .Values.imageRevision | quote }}
     spec:
-      nodeSelector:
-        {{- toYaml .Values.nodeSelector | nindent 8 }}
       containers:
         - name: ledgerwriter
           # image: us-central1-docker.pkg.dev/bank-of-anthos-ci/bank-of-anthos/ledgerwriter:v0.6.10
           image: "{{ .Values.images.ledgerwriter }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
           resources:
 {{ toYaml .Values.resources.ledgerwriter.app | nindent 12 }}
           ports:
@@ -347,16 +351,16 @@ spec:
               value: "8080"       
             # === 이 부분을 추가해 주세요 ===
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://side-project-db-rw.backend.svc.cluster.local:5432/app"
+              value: "jdbc:postgresql://project03-db-rw.backend.svc.cluster.local:5432/app"
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: side-project-db-app
+                  name: project03-db-app
                   key: username
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: side-project-db-app
+                  name: project03-db-app
                   key: password
             # ============================
           envFrom:
@@ -435,13 +439,14 @@ spec:
     metadata:
       labels:
         app: transactionhistory
+      annotations:
+        app.mgpzz.com/image-revision: {{ .Values.imageRevision | quote }}
     spec:
-      nodeSelector:
-        {{- toYaml .Values.nodeSelector | nindent 8 }}
       containers:
         - name: transactionhistory
           # image: us-central1-docker.pkg.dev/bank-of-anthos-ci/bank-of-anthos/transactionhistory:v0.6.10
           image: "{{ .Values.images.transactionhistory }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
           resources:
 {{ toYaml .Values.resources.transactionhistory.app | nindent 12 }}
           ports:
@@ -453,16 +458,16 @@ spec:
               value: "8080"
             # === 이 부분을 추가해 주세요 ===
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://side-project-db-rw.backend.svc.cluster.local:5432/app"
+              value: "jdbc:postgresql://project03-db-rw.backend.svc.cluster.local:5432/app"
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: side-project-db-app
+                  name: project03-db-app
                   key: username
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: side-project-db-app
+                  name: project03-db-app
                   key: password
             # ============================
           envFrom:

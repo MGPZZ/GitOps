@@ -9,6 +9,12 @@ metadata:
 spec:
   # 운영 데이터용이므로 1대 Pod로 경량화하여 구동
   instances: 1
+  # CNPG가 생성하는 Secret(krr-data-db-app)에 Reflector 어노테이션 자동 상속
+  inheritedMetadata:
+    annotations:
+      reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+      reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
+      reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: "monitoring"
   serviceAccountTemplate:
     metadata:
       annotations:
