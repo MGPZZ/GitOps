@@ -63,11 +63,13 @@ spec:
       app: frontend
   strategy:
     canary:
-      activeService: mak-app-active
-      previewService: mak-app-preview
+      stableService: mak-app-active
+      canaryService: mak-app-preview
       trafficRouting:
-        gateway:
-          httpRouteName: mak-app-route
+        plugins:
+          argoproj-labs/gatewayAPI:
+            httpRoute: mak-app-route
+            namespace: {{ .Release.Namespace | default "default" }}
       steps:
         - setWeight: 10
         - pause: {}
@@ -105,22 +107,8 @@ spec:
               value: "true"
             - name: LOG_LEVEL
               value: "info"
-            - name: REDIS_HOST
-              value: {{ .Values.redis.host | quote }}
-            - name: REDIS_PORT
-              value: {{ .Values.redis.port | quote }}
-            - name: REDIS_DB
-              value: {{ .Values.redis.db | quote }}
-            - name: REDIS_TLS_ENABLED
-              value: {{ .Values.redis.tlsEnabled | quote }}
-            - name: REDIS_PASSWORD
-              value: {{ .Values.redis.password | quote }}
-            - name: SLOTS_PER_POD
-              value: {{ .Values.autoscaling.frontend.slotsPerPod | default "20" | quote }}
-            - name: USER_SESSION_TTL
-              value: {{ .Values.autoscaling.frontend.userSessionTtl | default "60" | quote }}
             - name: ENABLE_WAITING_ROOM
-              value: "true"
+              value: "false"
 
             # === 외부 CNPG 데이터베이스 연동 계정 주입 ===
             # - name: DB_HOST
