@@ -15,6 +15,10 @@ spec:
       annotations:
         app.mgpzz.com/image-revision: {{ .Values.imageRevision | quote }}
     spec:
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: userservice
           #image: us-central1-docker.pkg.dev/bank-of-anthos-ci/bank-of-anthos/userservice:v0.6.10
@@ -97,6 +101,10 @@ spec:
       annotations:
         app.mgpzz.com/image-revision: {{ .Values.imageRevision | quote }}
     spec:
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: contacts
           # image: us-central1-docker.pkg.dev/bank-of-anthos-ci/bank-of-anthos/contacts:v0.6.10
@@ -173,6 +181,10 @@ spec:
       annotations:
         app.mgpzz.com/image-revision: {{ .Values.imageRevision | quote }}
     spec:
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: balancereader
           #image: us-central1-docker.pkg.dev/bank-of-anthos-ci/bank-of-anthos/balancereader:v0.6.10
@@ -252,6 +264,10 @@ spec:
       annotations:
         app.mgpzz.com/image-revision: {{ .Values.imageRevision | quote }}
     spec:
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: ledgerwriter
           # image: us-central1-docker.pkg.dev/bank-of-anthos-ci/bank-of-anthos/ledgerwriter:v0.6.10
@@ -332,6 +348,10 @@ spec:
       annotations:
         app.mgpzz.com/image-revision: {{ .Values.imageRevision | quote }}
     spec:
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: transactionhistory
           # image: us-central1-docker.pkg.dev/bank-of-anthos-ci/bank-of-anthos/transactionhistory:v0.6.10

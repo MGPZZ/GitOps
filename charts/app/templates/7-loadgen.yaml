@@ -46,6 +46,10 @@ spec:
         run-id: {{ $safeRunId | quote }}
         phase: {{ .Values.loadgen.phase | quote }}
     spec:
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       restartPolicy: Never
       automountServiceAccountToken: false
       containers:

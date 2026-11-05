@@ -85,6 +85,10 @@ spec:
       annotations:
         app.mgpzz.com/image-revision: {{ .Values.imageRevision | quote }}
     spec:
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: mak-container
           image: "{{ .Values.images.frontend }}"
