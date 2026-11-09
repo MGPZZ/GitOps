@@ -25,10 +25,15 @@ spec:
               value: 1
               periodSeconds: 60
   triggers:
-    - type: cpu
-      metricType: Utilization
+    - type: prometheus
+      metricType: Value
       metadata:
-        value: {{ $.Values.autoscaling.backend.cpuUtilization | quote }}
+        serverAddress: {{ $.Values.autoscaling.backend.prometheus.serverAddress | quote }}
+        threshold: {{ $.Values.autoscaling.backend.cpuUtilization | quote }}
+        ignoreNullValues: "false"
+        query: |
+          100 * sum(rate(container_cpu_usage_seconds_total{namespace="{{ $.Release.Namespace }}", pod=~"{{ $serviceName }}-.*", container!="", container!="POD"}[2m]))
+          / (sum(kube_pod_container_resource_requests{namespace="{{ $.Release.Namespace }}", pod=~"{{ $serviceName }}-.*", resource="cpu", container!="", container!="POD"}) > 0)
 ---
 {{- end }}
 {{- end }}

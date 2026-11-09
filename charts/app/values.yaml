@@ -65,7 +65,9 @@ autoscaling:
     maxReplicas: 5
     pollingInterval: 5
     cooldownPeriod: 60
-    cpuUtilization: "70" # Percentage of requested CPU; requires Kubernetes Metrics Server.
+    cpuUtilization: "70"
+    prometheus:
+      serverAddress: "http://prometheus-stack-kube-prom-prometheus.monitoring.svc.cluster.local:9090"
 # 유한 시간 Bank of Anthos k6 Job. runId 변경이 재실행 키이며 기본값은 배포하지 않음.
 loadgen:
   enabled: false
