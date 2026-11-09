@@ -39,15 +39,15 @@ spec:
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: project03-db-app
+                  name: side-project-db-app
                   key: username
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: project03-db-app
+                  name: side-project-db-app
                   key: password
             - name: ACCOUNTS_DB_URI
-              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@project03-db-rw.backend.svc.cluster.local:5432/app"
+              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@side-project-db-rw.backend.svc.cluster.local:5432/app"
             # ============================
           envFrom:
             - configMapRef:
@@ -121,15 +121,15 @@ spec:
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: project03-db-app
+                  name: side-project-db-app
                   key: username
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: project03-db-app
+                  name: side-project-db-app
                   key: password
             - name: ACCOUNTS_DB_URI
-              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@project03-db-rw.backend.svc.cluster.local:5432/app"
+              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@side-project-db-rw.backend.svc.cluster.local:5432/app"
             # ============================
           envFrom:
             - configMapRef:
@@ -201,16 +201,16 @@ spec:
               value: "8080"
             # === 이 부분을 추가해 주세요 ===
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://project03-db-rw.backend.svc.cluster.local:5432/app"
+              value: "jdbc:postgresql://side-project-db-rw.backend.svc.cluster.local:5432/app"
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: project03-db-app
+                  name: side-project-db-app
                   key: username
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: project03-db-app
+                  name: side-project-db-app
                   key: password
             # ============================
           envFrom:
@@ -284,16 +284,16 @@ spec:
               value: "8080"       
             # === 이 부분을 추가해 주세요 ===
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://project03-db-rw.backend.svc.cluster.local:5432/app"
+              value: "jdbc:postgresql://side-project-db-rw.backend.svc.cluster.local:5432/app"
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: project03-db-app
+                  name: side-project-db-app
                   key: username
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: project03-db-app
+                  name: side-project-db-app
                   key: password
             # ============================
           envFrom:
@@ -368,16 +368,16 @@ spec:
               value: "8080"
             # === 이 부분을 추가해 주세요 ===
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://project03-db-rw.backend.svc.cluster.local:5432/app"
+              value: "jdbc:postgresql://side-project-db-rw.backend.svc.cluster.local:5432/app"
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: project03-db-app
+                  name: side-project-db-app
                   key: username
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: project03-db-app
+                  name: side-project-db-app
                   key: password
             # ============================
           envFrom:
