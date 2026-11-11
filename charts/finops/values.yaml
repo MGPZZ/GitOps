@@ -1,7 +1,7 @@
 replicaCount: 1
 priorityClassName: support-workload
 nodeSelector:
-  role: worker
+  role: management
 
 image:
   repository: 372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/krr-analyzer

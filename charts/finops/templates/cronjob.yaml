@@ -18,8 +18,10 @@ spec:
             {{- include "finops.selectorLabels" . | nindent 12 }}
         spec:
           priorityClassName: {{ .Values.priorityClassName | quote }}
+          {{- with .Values.nodeSelector }}
           nodeSelector:
-            role: worker
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           restartPolicy: OnFailure
           containers:
             - name: finops-analyzer-trigger

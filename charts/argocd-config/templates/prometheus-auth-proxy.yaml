@@ -56,7 +56,7 @@ spec:
     spec:
       priorityClassName: {{ .Values.prometheusAuth.priorityClassName | quote }}
       nodeSelector:
-        role: management
+        role: monitoring
       securityContext:
         runAsNonRoot: true
         runAsUser: 101
