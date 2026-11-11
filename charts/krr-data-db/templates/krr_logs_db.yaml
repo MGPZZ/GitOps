@@ -48,6 +48,20 @@ spec:
           );
           ALTER TABLE krr_logs OWNER TO scott;
   affinity:
+    # 네임스페이스가 다른 서비스 DB와 KRR DB도 서로 다른 노드에 배치
+    additionalPodAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - topologyKey: kubernetes.io/hostname
+          namespaces:
+            - backend
+            - finops
+          labelSelector:
+            matchExpressions:
+              - key: cnpg.io/cluster
+                operator: In
+                values:
+                  - side-project-db
+                  - krr-data-db
     nodeSelector:
       role: db
     tolerations:

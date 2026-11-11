@@ -81,6 +81,22 @@ spec:
   # =========================================
   # EKS에 미리 생성해둔 DB 전용 노드(eks-db-node)에만 DB가 생성되도록 설정합니다.
   affinity:
+    enablePodAntiAffinity: true
+    podAntiAffinityType: required
+    topologyKey: kubernetes.io/hostname
+    # 네임스페이스가 다른 서비스 DB와 KRR DB도 서로 다른 노드에 배치
+    additionalPodAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - topologyKey: kubernetes.io/hostname
+          namespaces:
+            - backend
+            - finops
+          labelSelector:
+            matchExpressions:
+              - key: cnpg.io/cluster
+                operator: In
+                values:
+                  - side-project-db
     nodeSelector:
       role: db
     tolerations:
@@ -88,6 +104,15 @@ spec:
       operator: "Equal"
       value: "db"
       effect: "NoSchedule"
+
+  topologySpreadConstraints:
+    - maxSkew: 1
+      minDomains: 2
+      topologyKey: topology.kubernetes.io/zone
+      whenUnsatisfiable: DoNotSchedule
+      labelSelector:
+        matchLabels:
+          cnpg.io/cluster: side-project-db
 
   # =========================================
   # 스토리지(디스크) 설정
