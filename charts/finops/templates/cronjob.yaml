@@ -17,6 +17,7 @@ spec:
           labels:
             {{- include "finops.selectorLabels" . | nindent 12 }}
         spec:
+          priorityClassName: {{ .Values.priorityClassName | quote }}
           nodeSelector:
             role: worker
           restartPolicy: OnFailure

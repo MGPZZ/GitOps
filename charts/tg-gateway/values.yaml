@@ -1,4 +1,5 @@
 replicaCount: 1
+priorityClassName: support-workload
 nodeSelector:
   role: worker
 image:

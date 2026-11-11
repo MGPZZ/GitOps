@@ -32,6 +32,7 @@ httpRoutes:
     serviceName: "tg-gateway-service"
     port: 8000
 prometheusAuth:
+  priorityClassName: support-workload
   enabled: true
   username: admin
   # Password: admin1234. Only the one-way hash is stored in Git.

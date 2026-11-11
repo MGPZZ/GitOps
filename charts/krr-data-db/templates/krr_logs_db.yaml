@@ -7,6 +7,7 @@ metadata:
   name: krr-data-db
   namespace: finops
 spec:
+  priorityClassName: {{ .Values.priorityClassName | quote }}
   # 운영 데이터용이므로 1대 Pod로 경량화하여 구동
   instances: 1
   # CNPG가 생성하는 Secret(krr-data-db-app)에 Reflector 어노테이션 자동 상속

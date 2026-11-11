@@ -85,6 +85,7 @@ spec:
       annotations:
         app.mgpzz.com/image-revision: {{ .Values.imageRevision | quote }}
     spec:
+      priorityClassName: {{ .Values.priorityClassName | quote }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
