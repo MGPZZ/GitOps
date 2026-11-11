@@ -82,16 +82,6 @@ autoscaling:
     scaleDown:
       stabilizationWindowSeconds: 300
       periodSeconds: 60
-    chronos:
-      serverAddress: "http://thanos-query.prometheus.svc.cluster.local:9090"
-      query: >-
-        (
-          max(chronos_scaling_replicas{deployment="mak-app-rollout"})
-          * max(chronos_forecast_valid{deployment="mak-app-rollout"})
-          * max((time() - chronos_forecast_timestamp_seconds{deployment="mak-app-rollout"}) < bool 120)
-        ) or vector(0)
-      threshold: "1"
-      activationThreshold: "0"
   backend:
     enabled: true
     minReplicas: 1
@@ -99,10 +89,6 @@ autoscaling:
     pollingInterval: 5
     cooldownPeriod: 60
     redisListLength: "2"
-    chronos:
-      serverAddress: "http://prometheus-stack-kube-prom-prometheus.prometheus.svc.cluster.local:9090" 
-      threshold: "1"
-      activationThreshold: "0"
 # 유한 시간 Bank of Anthos k6 Job. runId 변경이 재실행 키이며 기본값은 배포하지 않음.
 loadgen:
   enabled: false
