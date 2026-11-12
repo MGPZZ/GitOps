@@ -25,15 +25,18 @@ spec:
               value: 1
               periodSeconds: 60
   triggers:
+    # KRR이 requests.cpu를 줄여도 KEDA 스케일링에 간섭이 없도록
+    # requests 대비 비율(%) 대신 절대 CPU 코어 사용량(AverageValue)을 기준으로 스케일링합니다.
     - type: prometheus
-      metricType: Value
+      name: cpu-core-usage
+      metricType: AverageValue
       metadata:
         serverAddress: {{ $.Values.autoscaling.backend.prometheus.serverAddress | quote }}
-        threshold: {{ $.Values.autoscaling.backend.cpuUtilization | quote }}
+        threshold: {{ $.Values.autoscaling.backend.cpuAverageCores | quote }}
+        activationThreshold: {{ $.Values.autoscaling.backend.activationThreshold | default "0.02" | quote }}
         ignoreNullValues: "false"
         query: |
-          100 * sum(rate(container_cpu_usage_seconds_total{namespace="{{ $.Release.Namespace }}", pod=~"{{ $serviceName }}-.*", container!="", container!="POD"}[2m]))
-          / (sum(kube_pod_container_resource_requests{namespace="{{ $.Release.Namespace }}", pod=~"{{ $serviceName }}-.*", resource="cpu", container!="", container!="POD"}) > 0)
+          sum(rate(container_cpu_usage_seconds_total{namespace="{{ $.Release.Namespace | default "default" }}", pod=~"{{ $serviceName }}-.*", container!="", container!="POD"}[2m]))
 ---
 {{- end }}
 {{- end }}
