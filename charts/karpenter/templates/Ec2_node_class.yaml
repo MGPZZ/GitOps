@@ -3,6 +3,8 @@ kind: EC2NodeClass
 metadata:
   name: worker-nodepool
 spec:
+  kubelet:
+    maxPods: {{ .Values.kubelet.maxPods }}
   amiFamily: AL2023
   amiSelectorTerms:
     - alias: al2023@latest
