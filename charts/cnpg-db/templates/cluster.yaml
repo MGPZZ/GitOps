@@ -10,7 +10,7 @@ metadata:
   namespace: default
   annotations:
     # 테라폼(05-cnpg-backup.tf)에서 생성한 AWS IAM Role 주소 매핑
-    eks.amazonaws.com/role-arn: "arn:aws:iam::372666940978:role/side-project-cnpg-s3-role"
+    eks.amazonaws.com/role-arn: {{ .Values.backup.roleArn | quote }}
 --- 
 # =================================================================
 # 2. CloudNativePG 데이터베이스 클러스터 설정 (Cluster)
@@ -25,11 +25,11 @@ spec:
   # DB 인스턴스 개수 (2로 설정하면 1대는 쓰기용 Primary, 1대는 읽기용 Standby로 자동 구성되어 고가용성을 확보합니다)
   instances: 2 
 
-  # 위에서 만든 서비스 어카운트(cnpg-sa)를 DB Pod에 적용하여 AWS S3 접근 권한 부여
+  # CNPG가 생성하는 DB ServiceAccount에 백업용 IAM 역할을 연결합니다.
   serviceAccountTemplate:
     metadata:
       annotations:
-        eks.amazonaws.com/role-arn: "arn:aws:iam::372666940978:role/side-project-cnpg-s3-role"
+        eks.amazonaws.com/role-arn: {{ .Values.backup.roleArn | quote }}
   # =========================================
   # 데이터베이스 초기화(Bootstrap) 설정
   # =========================================

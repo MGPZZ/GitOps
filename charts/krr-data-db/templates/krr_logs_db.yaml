@@ -19,7 +19,7 @@ spec:
   serviceAccountTemplate:
     metadata:
       annotations:
-        eks.amazonaws.com/role-arn: "arn:aws:iam::372666940978:role/side-project-cnpg-s3-role"
+        eks.amazonaws.com/role-arn: {{ .Values.backup.roleArn | quote }}
   # DB 초기화 및 KRR 전용 테이블 스키마 생성
   bootstrap:
     initdb:
