@@ -97,6 +97,7 @@ spec:
                 operator: In
                 values:
                   - side-project-db
+                  - krr-data-db
     nodeSelector:
       role: db
     tolerations:

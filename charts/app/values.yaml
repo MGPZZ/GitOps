@@ -57,6 +57,10 @@ autoscaling:
     maxReplicas: 10
     pollingInterval: 10
     cooldownPeriod: 60
+    cpuAverageCores: "0.14"
+    activationThreshold: "0.02"
+    prometheus:
+      serverAddress: "http://prometheus-stack-kube-prom-prometheus.monitoring.svc.cluster.local:9090"
     scaleDown:
       stabilizationWindowSeconds: 300
       periodSeconds: 60
@@ -66,7 +70,8 @@ autoscaling:
     maxReplicas: 5
     pollingInterval: 5
     cooldownPeriod: 60
-    cpuUtilization: "70"
+    cpuAverageCores: "0.14"
+    activationThreshold: "0.02"
     prometheus:
       serverAddress: "http://prometheus-stack-kube-prom-prometheus.monitoring.svc.cluster.local:9090"
 # 유한 시간 Bank of Anthos k6 Job. runId 변경이 재실행 키이며 기본값은 배포하지 않음.
