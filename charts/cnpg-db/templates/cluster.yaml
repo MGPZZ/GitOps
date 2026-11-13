@@ -10,7 +10,7 @@ metadata:
   namespace: default
   annotations:
     # 테라폼(05-cnpg-backup.tf)에서 생성한 AWS IAM Role 주소 매핑
-    eks.amazonaws.com/role-arn: "arn:aws:iam::372666940978:role/project03-cnpg-s3-role"
+    eks.amazonaws.com/role-arn: "arn:aws:iam::372666940978:role/side-project-cnpg-s3-role"
 --- 
 # =================================================================
 # 2. CloudNativePG 데이터베이스 클러스터 설정 (Cluster)
@@ -18,9 +18,10 @@ metadata:
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: project03-db
-  namespace: backend # 앱(mak-app)과 같은 네임스페이스를 사용하여 통신을 편하게 함
+  name: side-project-db
+  namespace: backend # 앱과 같은 네임스페이스를 사용하여 통신을 편하게 함
 spec:
+  priorityClassName: {{ .Values.priorityClassName | quote }}
   # DB 인스턴스 개수 (2로 설정하면 1대는 쓰기용 Primary, 1대는 읽기용 Standby로 자동 구성되어 고가용성을 확보합니다)
   instances: 2 
 
@@ -28,7 +29,7 @@ spec:
   serviceAccountTemplate:
     metadata:
       annotations:
-        eks.amazonaws.com/role-arn: "arn:aws:iam::372666940978:role/project03-cnpg-s3-role"
+        eks.amazonaws.com/role-arn: "arn:aws:iam::372666940978:role/side-project-cnpg-s3-role"
   # =========================================
   # 데이터베이스 초기화(Bootstrap) 설정
   # =========================================
@@ -80,6 +81,23 @@ spec:
   # =========================================
   # EKS에 미리 생성해둔 DB 전용 노드(eks-db-node)에만 DB가 생성되도록 설정합니다.
   affinity:
+    enablePodAntiAffinity: true
+    podAntiAffinityType: required
+    topologyKey: kubernetes.io/hostname
+    # 네임스페이스가 다른 서비스 DB와 KRR DB도 서로 다른 노드에 배치
+    additionalPodAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - topologyKey: kubernetes.io/hostname
+          namespaces:
+            - backend
+            - finops
+          labelSelector:
+            matchExpressions:
+              - key: cnpg.io/cluster
+                operator: In
+                values:
+                  - side-project-db
+                  - krr-data-db
     nodeSelector:
       role: db
     tolerations:
@@ -87,7 +105,16 @@ spec:
       operator: "Equal"
       value: "db"
       effect: "NoSchedule"
-      
+
+  topologySpreadConstraints:
+    - maxSkew: 1
+      minDomains: 2
+      topologyKey: topology.kubernetes.io/zone
+      whenUnsatisfiable: DoNotSchedule
+      labelSelector:
+        matchLabels:
+          cnpg.io/cluster: side-project-db
+
   # =========================================
   # 스토리지(디스크) 설정
   # =========================================
@@ -102,7 +129,7 @@ spec:
   # 특정 시점 복구(Point-in-Time Recovery)를 할 때 필수적인 설정입니다.
   backup:
     barmanObjectStore:
-      destinationPath: "s3://project03-cnpg-backup-07l03u/"
+      destinationPath: "s3://side-project-cnpg-backup-07l03u/"
       s3Credentials:
         # 서비스어카운트(IRSA)에 부여된 IAM 권한을 그대로 상속받아 사용
         inheritFromIAMRole: true

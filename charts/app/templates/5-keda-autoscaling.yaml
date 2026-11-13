@@ -25,16 +25,18 @@ spec:
               value: 1
               periodSeconds: 60
   triggers:
-    # 큐 길이를 통한 KEDA 반응형 오토스케일링 (Redis 대기열 기반)
-    - type: redis
-      name: queue
+    # KRR이 requests.cpu를 줄여도 KEDA 스케일링에 간섭이 없도록
+    # requests 대비 비율(%) 대신 절대 CPU 코어 사용량(AverageValue)을 기준으로 스케일링합니다.
+    - type: prometheus
+      name: cpu-core-usage
+      metricType: AverageValue
       metadata:
-        # Terraform이 주입하는 ElastiCache 주소를 동적으로 사용
-        address: {{ required "Redis host is required in values.yaml" $.Values.redis.host }}:{{ $.Values.redis.port }}
-        listName: bank-{{ $serviceName }}-queue
-        listLength: {{ $.Values.autoscaling.backend.redisListLength | quote }}
-        enableTLS: {{ $.Values.redis.tlsEnabled | quote }}
-        databaseIndex: {{ $.Values.redis.db | default "0" | quote }}
+        serverAddress: {{ $.Values.autoscaling.backend.prometheus.serverAddress | quote }}
+        threshold: {{ $.Values.autoscaling.backend.cpuAverageCores | quote }}
+        activationThreshold: {{ $.Values.autoscaling.backend.activationThreshold | default "0.02" | quote }}
+        ignoreNullValues: "false"
+        query: |
+          sum(rate(container_cpu_usage_seconds_total{namespace="{{ $.Release.Namespace | default "default" }}", pod=~"{{ $serviceName }}-.*", container!="", container!="POD"}[2m]))
 ---
 {{- end }}
 {{- end }}

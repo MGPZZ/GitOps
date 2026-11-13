@@ -1,15 +1,20 @@
-replicaCount: 1
+replicaCount: 0
+priorityClassName: support-workload
+nodeSelector:
+  role: management
 image:
-  repository: 372666940978.dkr.ecr.ap-northeast-2.amazonaws.com/tg-gateway
+  repository: 597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/tg-gateway
   pullPolicy: Always
   tag: "v1.1.0-stable"
 service:
   type: ClusterIP
   port: 8000
 env:
-  githubRepoOwner: "After-mak"
-  githubRepoName: "mak-argocd-deploy"
-  targetBranch: "main"
+  githubRepoOwner: "MGPZZ"
+  githubRepoName: "GitOps"
+  targetBranch: "test_alb"
+  telegramUpdateMode: "webhook"
+  telegramWebhookUrl: "https://alarm.vche.cloud"
   finopsUrl: "http://finops-analyzer.finops.svc.cluster.local:8000"
 # 텔레그램 봇 토큰/챗ID, GitHub PAT는 여기에 평문으로 넣지 않습니다.
 # 아래 둘 중 하나를 사용하세요:

@@ -1,4 +1,4 @@
-namespace: prometheus
+namespace: monitoring
 
 # 대시보드를 여러 개 배포할 수 있도록 리스트로 관리합니다. 항목을 추가하면
 # templates/dashboard-configmap.yaml이 각각을 별도 ConfigMap으로 만들어
