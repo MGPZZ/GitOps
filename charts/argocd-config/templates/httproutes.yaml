@@ -11,7 +11,7 @@ spec:
       namespace: {{ $.Values.gatewayNamespace | default "default" }}
       sectionName: https
   hostnames:
-    - {{ .hostname | quote }}
+    - {{ printf "%s.%s" .subdomain $.Values.domain | quote }}
   rules:
     - backendRefs:
         - name: {{ .serviceName }}
@@ -30,7 +30,7 @@ spec:
       namespace: {{ $.Values.gatewayNamespace | default "default" }}
       sectionName: http
   hostnames:
-    - {{ .hostname | quote }}
+    - {{ printf "%s.%s" .subdomain $.Values.domain | quote }}
   rules:
     - filters:
         - type: RequestRedirect

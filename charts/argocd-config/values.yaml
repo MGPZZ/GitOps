@@ -1,20 +1,21 @@
 gatewayName: "my-gateway"
 gatewayNamespace: "default"
+domain: "vche.cloud"
 
 httpRoutes:
   - name: argocd-route
     namespace: argocd
-    hostname: "argocd.vche.cloud"
+    subdomain: "argocd"
     serviceName: "argocd-server"
     port: 80
   - name: grafana-route
     namespace: monitoring
-    hostname: "grafana.vche.cloud"
+    subdomain: "grafana"
     serviceName: "prometheus-stack-grafana"
     port: 80
   - name: prometheus-route
     namespace: monitoring
-    hostname: "prometheus.vche.cloud"
+    subdomain: "prometheus"
     serviceName: "prometheus-public-auth"
     port: 80
     healthCheck:
@@ -22,20 +23,18 @@ httpRoutes:
       successCodes: "200"
   - name: alertmanager-route
     namespace: monitoring
-    hostname: "alertmanager.vche.cloud"
+    subdomain: "alertmanager"
     serviceName: "prometheus-stack-kube-prom-alertmanager"
     port: 9093
-
   - name: tg-gateway-route
     namespace: monitoring
-    hostname: "alarm.vche.cloud"
+    subdomain: "alarm"
     serviceName: "tg-gateway-service"
     port: 8000
 prometheusAuth:
   priorityClassName: support-workload
   enabled: true
   username: admin
-  # Password: admin1234. Only the one-way hash is stored in Git.
   passwordHash: "{SHA}e5Aub/Hbn1YEQ/IEiXT9fThpdbA="
   image:
     repository: nginx

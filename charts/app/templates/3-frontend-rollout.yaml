@@ -92,7 +92,7 @@ spec:
       {{- end }}
       containers:
         - name: mak-container
-          image: "{{ .Values.images.frontend }}"
+          image: "{{ .Values.ecrRegistry }}/{{ .Values.images.frontend }}"
           imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
           ports:
             - containerPort: 8080
