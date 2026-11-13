@@ -2,4 +2,4 @@ karpenter_modulename: karpenter.k8s.aws
 karpenter_tag: karpenter.sh/discovery
 eks_name: side-project-eks
 kubelet:
-  maxPods: 20
+  maxPods: 30
