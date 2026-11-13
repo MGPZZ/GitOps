@@ -3,14 +3,15 @@ replicaCount: 2
 priorityClassName: service-critical
 nodeSelector:
   role: worker
+ecrRegistry: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com"
 images:
-  frontend: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/frontend_ecr:latest"
-  userservice: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/userservice_ecr:latest"
-  contacts: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/contacts_ecr:latest"
-  balancereader: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/balancereader_ecr:latest"
-  ledgerwriter: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/ledgerwriter_ecr:latest"
-  transactionhistory: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/transactionhistory_ecr:latest"
-  loadgen: "597936860185.dkr.ecr.ap-northeast-2.amazonaws.com/loadgen_ecr:v0.6.11"
+  frontend: "frontend_ecr:latest"
+  userservice: "userservice_ecr:latest"
+  contacts: "contacts_ecr:latest"
+  balancereader: "balancereader_ecr:latest"
+  ledgerwriter: "ledgerwriter_ecr:latest"
+  transactionhistory: "transactionhistory_ecr:latest"
+  loadgen: "loadgen_ecr:v0.6.11"
 imageRevision: "initial"
 image:
   pullPolicy: Always

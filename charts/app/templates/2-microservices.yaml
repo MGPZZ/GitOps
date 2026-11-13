@@ -22,8 +22,7 @@ spec:
       {{- end }}
       containers:
         - name: userservice
-          #image: us-central1-docker.pkg.dev/bank-of-anthos-ci/bank-of-anthos/userservice:v0.6.10
-          image: "{{ .Values.images.userservice }}"
+          image: "{{ .Values.ecrRegistry }}/{{ .Values.images.userservice }}"
           imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
           resources:
 {{ toYaml .Values.resources.userservice.app | nindent 12 }}
@@ -36,7 +35,6 @@ spec:
               value: "3600"
             - name: PRIV_KEY_PATH
               value: /tmp/.ssh/privatekey
-          # === 이 부분을 추가해 주세요 ===         
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
@@ -49,7 +47,6 @@ spec:
                   key: password
             - name: ACCOUNTS_DB_URI
               value: "postgresql://$(DB_USER):$(DB_PASSWORD)@side-project-db-rw.backend.svc.cluster.local:5432/app"
-            # ============================
           envFrom:
             - configMapRef:
                 name: environment-config
@@ -109,8 +106,7 @@ spec:
       {{- end }}
       containers:
         - name: contacts
-          # image: us-central1-docker.pkg.dev/bank-of-anthos-ci/bank-of-anthos/contacts:v0.6.10
-          image: "{{ .Values.images.contacts }}"
+          image: "{{ .Values.ecrRegistry }}/{{ .Values.images.contacts }}"
           imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
           resources:
 {{ toYaml .Values.resources.contacts.app | nindent 12 }}
@@ -190,8 +186,7 @@ spec:
       {{- end }}
       containers:
         - name: balancereader
-          #image: us-central1-docker.pkg.dev/bank-of-anthos-ci/bank-of-anthos/balancereader:v0.6.10
-          image: "{{ .Values.images.balancereader }}"
+          image: "{{ .Values.ecrRegistry }}/{{ .Values.images.balancereader }}"
           imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
           resources:
 {{ toYaml .Values.resources.balancereader.app | nindent 12 }}
@@ -202,7 +197,6 @@ spec:
               value: "v0.6.10"
             - name: PORT
               value: "8080"
-            # === 이 부분을 추가해 주세요 ===
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://side-project-db-rw.backend.svc.cluster.local:5432/app"
             - name: SPRING_DATASOURCE_USERNAME
@@ -215,7 +209,6 @@ spec:
                 secretKeyRef:
                   name: side-project-db-app
                   key: password
-            # ============================
           envFrom:
             - configMapRef:
                 name: environment-config
@@ -274,8 +267,7 @@ spec:
       {{- end }}
       containers:
         - name: ledgerwriter
-          # image: us-central1-docker.pkg.dev/bank-of-anthos-ci/bank-of-anthos/ledgerwriter:v0.6.10
-          image: "{{ .Values.images.ledgerwriter }}"
+          image: "{{ .Values.ecrRegistry }}/{{ .Values.images.ledgerwriter }}"
           imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
           resources:
 {{ toYaml .Values.resources.ledgerwriter.app | nindent 12 }}
@@ -359,8 +351,7 @@ spec:
       {{- end }}
       containers:
         - name: transactionhistory
-          # image: us-central1-docker.pkg.dev/bank-of-anthos-ci/bank-of-anthos/transactionhistory:v0.6.10
-          image: "{{ .Values.images.transactionhistory }}"
+          image: "{{ .Values.ecrRegistry }}/{{ .Values.images.transactionhistory }}"
           imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
           resources:
 {{ toYaml .Values.resources.transactionhistory.app | nindent 12 }}
