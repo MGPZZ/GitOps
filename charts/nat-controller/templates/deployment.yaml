@@ -1,0 +1,73 @@
+{{- $config := required "config is required" .Values.config | toPrettyJson }}
+# Controller의 EC2 접근에 사용할 IAM 역할 연결
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nat-controller
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    eks.amazonaws.com/role-arn: {{ required "roleArn is required" .Values.roleArn | quote }}
+---
+# NAT 인스턴스와 라우팅 테이블 설정
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nat-controller-config
+  namespace: {{ .Release.Namespace }}
+data:
+  config.json: |
+    {{- $config | nindent 4 }}
+---
+# 관리 노드에서 Controller를 실행하고 로컬 Secret을 주입
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nat-controller
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  # 교체할 때 두 Controller가 동시에 AWS 경로를 수정하지 않게 한다.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nat-controller
+  template:
+    metadata:
+      labels:
+        app: nat-controller
+      annotations:
+        checksum/config: {{ $config | sha256sum | quote }}
+        nat-controller/token-version: {{ .Values.tokenVersion | quote }}
+    spec:
+      serviceAccountName: nat-controller
+      automountServiceAccountToken: true
+      nodeSelector:
+        role: management
+      containers:
+        - name: nat-controller
+          image: "{{ required "image.repository is required" .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: WEBHOOK_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "webhookSecretName is required" .Values.webhookSecretName | quote }}
+                  key: token
+            - name: AWS_DEFAULT_REGION
+              value: {{ .Values.config.region | quote }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nat-controller
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: nat-controller-config

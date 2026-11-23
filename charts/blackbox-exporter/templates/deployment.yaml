@@ -1,0 +1,114 @@
+# Blackbox Exporter Pod를 관리하는 Deployment
+apiVersion: apps/v1
+kind: Deployment
+# Deployment 이름과 식별 라벨
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: blackbox-exporter
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  # values.yaml에서 지정한 수만큼 Pod 유지
+  replicas: {{ .Values.replicaCount }}
+
+  # AZ별 추가 Pod 없이 기존 Pod를 하나씩 교체
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  # 이 Deployment가 관리할 Pod의 라벨
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: blackbox-exporter
+      app.kubernetes.io/instance: {{ .Release.Name }}
+
+  template:
+    metadata:
+      # Deployment와 Service가 Pod를 찾을 때 사용하는 라벨
+      labels:
+        app.kubernetes.io/name: blackbox-exporter
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      # ConfigMap이 바뀌면 Pod도 갱신
+      annotations:
+        checksum/config: {{ include (print .Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      # 모니터링용 priorityClassName 설정으로 grafana, prometheus와 같은 pod 생성 우선순위 부여
+      priorityClassName: {{ .Values.priorityClassName | quote }}
+      # 인증 토큰 마운트 생략
+      automountServiceAccountToken: false
+      # monitoring 역할의 노드에만 배치
+      nodeSelector:
+        role: monitoring
+
+      # pod를 같은 노드에 배치하지 않는 설정
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: blackbox-exporter
+                  app.kubernetes.io/instance: {{ .Release.Name }}
+              topologyKey: topology.kubernetes.io/zone
+
+      # Pod를 비루트 사용자와 기본 시스템 호출 제한으로 실행
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+
+      # Blackbox Exporter 컨테이너 실행
+      containers:
+        - name: blackbox-exporter
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          # 설정 파일 위치와 검사 요청 수신 포트
+          args:
+            - --config.file=/etc/blackbox-exporter/blackbox.yml
+            - --web.listen-address=:9115
+
+          # 권한 상승과 파일시스템 쓰기를 제한
+          securityContext:
+            allowPrivilegeEscalation: false # 지금보다 높은 권한을 얻지 못하게 하기
+            readOnlyRootFilesystem: true # 기본 파일 시스템을 읽기 전용으로 만들기
+            capabilities:               # 네트워크 설정 변경같은 linux 권한 제거
+              drop: [ALL]
+
+          # values.yaml의 CPU·메모리 설정 적용
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
+          # Service가 연결할 컨테이너 포트
+          ports:
+            - name: http
+              containerPort: 9115
+
+          # Exporter의 상태를 체크 10초마다 확인
+          readinessProbe:
+            # 위의 블럭에서 http라는 이름을 9115포트로 지정했기 때문에 9115포트를 통해서 tcp 연결이 가능한지 확인하는 것
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          # Exporter가 응답하지 않으면 컨테이너 재시작
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+          # 검사 설정을 컨테이너에 읽기 전용으로 연결
+          volumeMounts:
+            - name: config
+              mountPath: /etc/blackbox-exporter
+              readOnly: true
+              
+      # 마운트할 ConfigMap 지정
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Release.Name }}-config

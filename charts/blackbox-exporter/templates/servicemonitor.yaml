@@ -1,0 +1,54 @@
+# Prometheus가 각 Exporter Pod에 TCP 검사를 요청하는 설정
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+
+# ServiceMonitor 이름과 식별 라벨
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: blackbox-exporter
+    app.kubernetes.io/instance: {{ .Release.Name }}
+
+spec:
+  # Pod가 실행 중인 노드의 메타데이터도 수집
+  attachMetadata:
+    node: true
+
+  # 검사할 Service가 있는 namespace
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+
+  # 수집할 Blackbox Service 선택
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: blackbox-exporter
+      app.kubernetes.io/instance: {{ .Release.Name }}
+
+  # 외부 목적지마다 각 Pod의 /probe를 주기적으로 호출
+  endpoints:
+    {{- range $job, $targets := dict "blackbox-exporter" .Values.targets "blackbox-nat-recovery" .Values.recoveryTargets }}
+    {{- range $targets }}
+    - port: http
+      path: /probe
+      interval: {{ $.Values.scrapeInterval }}
+      scrapeTimeout: {{ $.Values.scrapeTimeout }}
+
+      # blackbox exporter를 통해 configmap에 미리 작성해둔 tcp_connect를 통해 검사를 실행함
+      params:
+        module: [tcp_connect]
+        target:
+          - {{ . | quote }}
+
+      # 검사 결과에 작업명, 실제 AZ, 목적지 라벨 부여
+      relabelings:
+        - targetLabel: job
+          replacement: {{ $job }}
+        - targetLabel: az
+          sourceLabels:
+            - __meta_kubernetes_node_label_topology_kubernetes_io_zone
+        - targetLabel: instance
+          replacement: {{ . | quote }}
+    {{- end }}
+    {{- end }}

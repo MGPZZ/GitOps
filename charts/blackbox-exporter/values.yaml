@@ -1,0 +1,35 @@
+# 실행할 Blackbox Exporter 이미지
+image:
+  repository: quay.io/prometheus/blackbox-exporter
+  tag: v0.29.1
+
+# 모니터링용 Pod 우선순위
+priorityClassName: node-observability
+
+# 서로 다른 AZ에 배치할 Pod 개수
+replicaCount: 2
+
+# NAT를 통과해 TCP 연결을 확인할 외부 IP와 포트
+targets:
+  - "1.1.1.1:53"
+  - "8.8.8.8:53"
+
+# 기본 경로와 별도로 원래 NAT를 통과하는 복구 검사 대상
+recoveryTargets: []
+
+# 외부 TCP 연결을 기다리는 최대 시간
+probeTimeout: 3s
+# Prometheus가 검사를 요청하는 주기와 응답 대기 시간
+scrapeInterval: 15s
+scrapeTimeout: 5s
+
+# Pod에 할당할 CPU와 메모리
+resources:
+  # 스케줄링 시 확보할 자원
+  requests:
+    cpu: 25m
+    memory: 32Mi
+  # 컨테이너의 자원 사용 상한
+  limits:
+    cpu: 100m
+    memory: 128Mi

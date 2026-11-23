@@ -1,0 +1,23 @@
+# Blackbox Exporter가 읽을 검사 설정
+apiVersion: v1
+kind: ConfigMap
+# 설정 이름과 배포 namespace
+metadata:
+  name: {{ .Release.Name }}-config
+  namespace: {{ .Release.Namespace }}
+  # 같은 Helm 배포의 리소스를 구분하는 라벨
+  labels:
+    app.kubernetes.io/name: blackbox-exporter
+    app.kubernetes.io/instance: {{ .Release.Name }}
+# 컨테이너에 파일로 마운트할 설정 내용
+data:
+  blackbox.yml: |
+    # Prometheus가 호출할 TCP 검사 모듈
+    modules:
+      tcp_connect:
+        prober: tcp
+        timeout: {{ .Values.probeTimeout }}
+        # IPv4 NAT 경로만 검사하고 IPv6로 우회하지 않음
+        tcp:
+          preferred_ip_protocol: ip4
+          ip_protocol_fallback: false

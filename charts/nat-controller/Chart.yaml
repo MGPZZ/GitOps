@@ -1,0 +1,4 @@
+apiVersion: v2
+name: nat-controller
+type: application
+version: 0.1.0

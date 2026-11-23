@@ -1,0 +1,14 @@
+# Alertmanager가 클러스터 내부에서 Controller에 접근하는 주소
+apiVersion: v1
+kind: Service
+metadata:
+  name: nat-controller
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: ClusterIP
+  selector:
+    app: nat-controller
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http

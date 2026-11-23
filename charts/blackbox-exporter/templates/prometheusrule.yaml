@@ -1,0 +1,30 @@
+{{- $targets := .Values.targets | uniq }}
+{{- $patterns := list }}
+{{- range $targets }}
+{{- $patterns = append $patterns (regexQuoteMeta .) }}
+{{- end }}
+{{- $selector := printf "job=\"blackbox-exporter\",namespace=%q,service=%q,az!=\"\",instance=~%q" .Release.Namespace .Release.Name (join "|" $patterns) }}
+# 수집이 성공한 검사 중 모든 목적지가 실패한 AZ를 찾는다.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ .Release.Name }}-nat-egress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    release: prometheus-stack
+spec:
+  groups:
+    - name: nat-egress
+      rules:
+        - alert: NATEgressFailure
+          # 같은 목적지에 결과가 여러 개면 성공이 하나라도 있는지 확인한다.
+          expr: |
+            count by (az) (
+              max by (az, instance) (
+                probe_success{ {{- $selector -}} }
+                and (up{ {{- $selector -}} } == 1)
+              ) == 0
+            ) == {{ len $targets }}
+          for: 1m
+          annotations:
+            summary: 'AZ {{ "{{ $labels.az }}" }}의 NAT 경로에서 모든 외부 목적지 연결 실패'
