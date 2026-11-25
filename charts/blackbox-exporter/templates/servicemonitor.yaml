@@ -46,6 +46,7 @@ spec:
         - targetLabel: job
           replacement: {{ $job }}
         - targetLabel: az
+          action: replace
           sourceLabels:
             - __meta_kubernetes_node_label_topology_kubernetes_io_zone
         - targetLabel: instance
